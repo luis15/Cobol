@@ -1,0 +1,408 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. MANUT.
+
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SPECIAL-NAMES. DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT CADALUNO ASSIGN TO DISK
+              ORGANIZATION INDEXED
+              ACCESS MODE DYNAMIC
+              RECORD KEY FD-RA
+              FILE STATUS FS.
+
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD CADALUNO LABEL RECORD STANDARD
+           VALUE OF FILE-ID "input.txt".
+       01 REG-CADALUNO.
+           02 FD-RA.
+              03 RA     PIC 9(06).
+           02 FD-NOME   PIC X(30).
+           02 FD-END    PIC X(30).
+           02 FD-BAIRRO PIC X(20).
+           02 FD-CIDADE PIC X(20).
+           02 FD-CEP    PIC 9(08).
+           02 FD-TEL    PIC X(20).
+
+       WORKING-STORAGE SECTION.
+       77 WS-SPACE      PIC X(40)  VALUE SPACES.
+       77 FS            PIC X(02)  VALUE SPACES.
+       77 WS-FUNC       PIC 9      VALUE ZEROS.
+       77 MSG           PIC X(09)  VALUE SPACES.
+       77 WS-CONF       PIC X      VALUE SPACE.       
+       01 WS-DATA-SIS.
+           02 AA        PIC 9(02)  VALUE ZEROS.
+           02 MM        PIC 9(02)  VALUE ZEROS.
+           02 DD        PIC 9(02)  VALUE ZEROS.
+       01 WS-MENSAGENS.
+           02 MENSA1    PIC X(43)  VALUE
+            "   Digite uma fun‡ao válida ".
+           02 MENSA2    PIC X(30)  VALUE "   Campo inválido ".
+           02 MENSA3    PIC X(30)  VALUE "   Aluno ja cadastrado     ".
+           02 MENSA4    PIC X(30)  VALUE "   Aluno nao cadastrado    ".
+
+       SCREEN SECTION.
+       01 TELA1.
+           02 BLANK SCREEN.
+           02 LINE 4 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE 
+           "                                                 ".
+           02 LINE 5 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE 
+           "                                                 ".
+           02 LINE 6 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE
+           "              CADASTRO DE ALUNOS                 ".
+           02 LINE 7 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE 
+           "                                                 ".
+           02 LINE 8 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE 
+           "                                                 ".
+           02 LINE 9 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE 
+           " ESCOLHA A FUNCAO: ( )                           ".
+           02 LINE 10 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE 
+           "                                                 ".
+           02 LINE 11 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE 
+           "                                                 ".
+           02 LINE 12 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE 
+           "                   (1) INCLUSAO                  ".
+           02 LINE 13 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE 
+           "                   (2) EXCLUSAO                  ".
+           02 LINE 14 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE 
+           "                   (3) CONSULTA                  ".
+           02 LINE 15 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE 
+           "                   (4) ALTERACAO                 ".
+           02 LINE 16 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE 
+           "                   (5) SAIR                      ".
+           02 LINE 17 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE
+           "                                                 ".
+           02 LINE 18 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE
+           "                                                 ".
+           02 LINE 19 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE 
+           "                                                 ".
+           02 LINE 20 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE 
+           "                                                 ".
+           02 LINE 21 COL 16 BACKGROUND-COLOR 3 HIGHLIGHT VALUE 
+           "                                                 ".
+       01 TELA2.
+           02 BLANK SCREEN.
+           02 LINE 4 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "           FUNCAO:                                        ".
+           02 LINE 5 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "                                                          ".
+           02 LINE 6 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "   0 - RA.......:                                         ".
+           02 LINE 7 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "                                                          ".
+           02 LINE 8 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "   1 - Nome.....:                                         ".
+           02 LINE 9 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "                                                          ".
+           02 LINE 10 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "   2 - Endereco.:                                         ".
+           02 LINE 11 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "                                                          ".
+           02 LINE 12 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "   3 - Bairro...:                                         ".
+           02 LINE 13 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "                                                          ".
+           02 LINE 14 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "   4 - Cidade...:                                         ".
+           02 LINE 15 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "                                                          ".
+           02 LINE 16 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "   5 - CEP......:                                         ".
+           02 LINE 17 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "                                                          ".
+           02 LINE 18 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "   6 - TEL......:                                         ".
+           02 LINE 19 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "                                                          ".
+           02 LINE 20 COL 19 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3 VALUE
+           "   MENSAGEM:                                              ".
+
+       01 LIMPATELA.
+           02 LINE 08 COLUMN 34 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3.
+           02 LINE 10 COLUMN 34 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3.
+           02 LINE 12 COLUMN 34 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3.
+           02 LINE 14 COLUMN 34 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3.
+           02 LINE 16 COLUMN 34 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3.
+           02 LINE 18 COLUMN 34 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3.
+       01 TELA-OPCAO.
+           02 LINE 04 COLUMN 41 PIC X(09) USING MSG.
+           
+       01 TELA-RELATORIO.
+           02 LINE 04 COLUMN 01 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3
+           VALUE "RA:".
+           02 LINE 04 COLUMN 06 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3
+           VALUE "NOME:".
+           02 LINE 04 COLUMN 12 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3
+           VALUE "ENDEREÇO:".
+           02 LINE 04 COLUMN 23 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3
+           VALUE "BAIRRO:".
+           02 LINE 04 COLUMN 31 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3
+           VALUE "CIDADE:".
+           02 LINE 04 COLUMN 40 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3
+           VALUE "CEP:".
+           02 LINE 04 COLUMN 46 BACKGROUND-COLOR 0 FOREGROUND-COLOR 3
+           VALUE "TEL:".
+       
+       PROCEDURE DIVISION.
+       LIMPA-DADOS.
+           MOVE 0 TO FD-RA.
+           MOVE " " TO FD-NOME.
+           MOVE " " TO FD-END. 
+           MOVE " " TO FD-BAIRRO. 
+           MOVE " " TO FD-CIDADE. 
+           MOVE 0 TO FD-CEP. 
+           MOVE 0 to FD-TEL.
+       
+       INICIO.
+           DISPLAY ERASE AT 0101.
+           OPEN I-O CADALUNO.
+           IF FS NOT = "00"
+              IF FS = "05"
+                 CLOSE CADALUNO OPEN OUTPUT CADALUNO CLOSE CADALUNO
+                 GO TO INICIO
+              ELSE
+                 DISPLAY "File Status --> " AT 1830
+                 SPACE FS
+                 STOP RUN
+              END-IF
+           ELSE
+              NEXT SENTENCE
+           END-IF.
+           ACCEPT WS-DATA-SIS FROM DATE.
+       TELA.
+           DISPLAY TELA1.
+           DISPLAY DD AT 0425 "/" MM "/" AA.
+       ESCOLHA.
+           ACCEPT WS-FUNC AT 0936 WITH AUTO-SKIP.
+           PERFORM LIMPA-DADOS
+           DISPLAY WS-SPACE AT 2030.
+           IF WS-FUNC = 0 OR >5
+              DISPLAY MENSA1 AT 2030
+              GO TO ESCOLHA
+           END-IF.
+           GO TO INCLUSAO EXCLUSAO CONSULTA ALTERACAO SAIR
+              DEPENDING ON WS-FUNC.
+
+       INCLUSAO.
+           DISPLAY ERASE AT 0101.
+           DISPLAY TELA2.
+
+       INCLUIR.
+           MOVE "INCLUSAO" TO MSG.                              
+           DISPLAY TELA-OPCAO.
+           ACCEPT FD-RA  AT 0637 WITH PROMPT.
+           DISPLAY WS-SPACE AT 1830.
+           IF FD-RA = ZEROS
+            DISPLAY MENSA2 AT 2129
+            GO TO INCLUIR
+           END-IF.
+           READ CADALUNO INVALID KEY GO TO ROT-NOME
+         NOT INVALID KEY
+                 DISPLAY MENSA3 AT 2030 GO TO INCLUIR
+           END-READ.
+       ROT-NOME.
+           ACCEPT FD-NOME AT 0837 WITH PROMPT.
+           DISPLAY WS-SPACE AT 1830.
+           IF FD-NOME = SPACES
+              DISPLAY MENSA2 AT 1830
+                 GO TO ROT-NOME
+           END-IF.
+       ROT-END.
+         ACCEPT FD-END AT 1037 WITH PROMPT.
+         DISPLAY WS-SPACE AT 1830.
+         IF FD-END = SPACES
+              DISPLAY MENSA2 AT 1830
+              GO TO ROT-END
+         END-IF.
+       ROT-BAIRRO.
+           ACCEPT FD-BAIRRO AT 1237 WITH PROMPT.
+           DISPLAY WS-SPACE AT 1830.
+                 IF FD-BAIRRO = SPACES
+              DISPLAY MENSA2 AT 1830
+                   GO TO ROT-BAIRRO
+                 END-IF.
+       ROT-CIDADE.
+           ACCEPT FD-CIDADE AT 1437 WITH PROMPT.
+           DISPLAY WS-SPACE AT 1830.
+                 IF FD-CIDADE = SPACES
+                 DISPLAY MENSA2 AT 1830
+                   GO TO ROT-CIDADE
+                 END-IF.
+       ROT-CEP.
+           ACCEPT FD-CEP AT 1637 WITH PROMPT.
+           DISPLAY WS-SPACE AT 1830.
+                 IF FD-BAIRRO = ZEROS
+              DISPLAY MENSA2 AT 1830
+                   GO TO ROT-CEP
+                 END-IF.
+       ROT-TEL.
+           accept FD-TEL at 1837 with prompt.
+           display WS-SPACE at 2030.
+               if FD-TEL = spaces  
+                    display MENSA2 at 2030
+                    go to ROT-TEL
+                    END-IF.
+         
+       ROT-GRAVA.
+           WRITE REG-CADALUNO INVALID KEY
+              DISPLAY "Erro de grava‡ao - FS=" AT 2030
+                 SPACE FS STOP RUN
+           END-WRITE.
+       ROT-RETORNO.
+              DISPLAY WS-SPACE AT 2030.
+           DISPLAY "          Continua a inclusao?      " AT 2030.
+           ACCEPT WS-CONF AT 2061 WITH AUTO-SKIP.
+           IF WS-CONF = "S" OR "s"
+              PERFORM LIMPA-DADOS
+              DISPLAY LIMPATELA
+              DISPLAY TELA2
+              GO TO INCLUIR
+             ELSE
+           GO TO TELA
+           END-IF.
+
+       ALTERACAO.
+           PERFORM INCLUSAO.
+           MOVE "ALTERACAO" TO MSG.
+           DISPLAY TELA-OPCAO.
+       ALTERAR.
+           ACCEPT FD-RA AT 0637 WITH PROMPT.
+              DISPLAY WS-SPACE AT 1830.
+              IF FD-RA = ZEROS
+                 DISPLAY MENSA2 AT 1830
+                 GO TO ALTERAR
+              END-IF.
+           READ CADALUNO INVALID KEY
+              DISPLAY MENSA4 AT 1830
+                 GO TO ALTERAR
+                 NOT INVALID KEY
+                 PERFORM MOSTRA
+           END-READ.
+       ALTERA.
+           DISPLAY WS-SPACE AT 2030.
+           DISPLAY " Digite o numero a alterar:  " AT 2030.
+           ACCEPT WS-FUNC AT 2061 WITH AUTO-SKIP.
+           IF WS-FUNC < 1 OR > 6
+              GO TO ALTERA
+            END-IF.
+            GO TO CPO-NOME CPO-END CPO-BAIRRO CPO-CIDADE CPO-CEP CPO-TEL
+              DEPENDING ON WS-FUNC.
+       CPO-NOME.
+           PERFORM ROT-NOME.
+           GO TO ROT-REGRAVA.
+       CPO-END.
+           PERFORM ROT-END.
+           GO TO ROT-REGRAVA.
+       CPO-BAIRRO.
+           PERFORM ROT-BAIRRO.
+           GO TO ROT-REGRAVA.
+       CPO-CIDADE.
+           PERFORM ROT-CIDADE.
+           GO TO ROT-REGRAVA.
+       CPO-CEP.
+           PERFORM ROT-CEP.
+           ROT-REGRAVA.
+       CPO-TEL.
+           perform ROT-TEL.
+           GO to ROT-REGRAVA.
+           go to ALTERA.
+           DISPLAY WS-SPACE AT 2030.
+           DISPLAY
+              " Continua a alterar este registro?  " AT 2030.
+           ACCEPT WS-CONF AT 2067 WITH AUTO-SKIP.
+           IF WS-CONF = "S" OR "s"
+              PERFORM LIMPA-DADOS                 
+              GO TO ALTERA
+              ELSE IF WS-CONF = "N" OR "n"
+                 NEXT SENTENCE
+              ELSE
+                 GO TO ROT-REGRAVA
+              END-IF
+              END-IF.
+                 REWRITE REG-CADALUNO INVALID KEY
+                   DISPLAY WS-SPACE AT 2030
+                   DISPLAY "Erro de regrava‡Æo FS =" AT 2030
+                    SPACE FS STOP RUN
+                 END-REWRITE.
+                 DISPLAY WS-SPACE AT 2030.
+              DISPLAY "      Continua Alterando?             " AT 2030.
+                 ACCEPT WS-CONF AT 2057 WITH AUTO-SKIP.
+                 IF WS-CONF = "S" OR "s"
+                 DISPLAY LIMPATELA
+                   GO TO ALTERAR
+                  ELSE
+                 GO TO TELA
+                 END-IF.
+
+       EXCLUSAO.
+           PERFORM INCLUSAO.
+           MOVE "EXCLUSAO" TO MSG.
+           DISPLAY TELA-OPCAO.
+       EXCLUIR.
+           PERFORM ALTERAR.
+           DISPLAY WS-SPACE AT 2030.
+           DISPLAY "        Confirma Exclusao?          " AT 2030.
+           ACCEPT WS-CONF AT 2057 WITH AUTO-SKIP.
+           IF WS-CONF = "S" OR "s"
+              NEXT SENTENCE
+           ELSE
+              DISPLAY LIMPATELA
+              GO TO EXCLUIR
+           END-IF.
+           DELETE CADALUNO INVALID KEY
+              DISPLAY WS-SPACE AT 2030
+              DISPLAY "Erro de Exclusao - FS" AT 2030
+              SPACE FS STOP RUN
+              
+           END-DELETE.
+           DISPLAY WS-SPACE AT 2030.
+           DISPLAY "      Continua a Exclusao?           " AT 2030.
+           ACCEPT WS-CONF AT 2057 WITH AUTO-SKIP.
+           IF WS-CONF = "S" OR "s"
+              PERFORM LIMPA-DADOS                 
+              DISPLAY LIMPATELA
+                GO TO EXCLUIR
+               ELSE
+              GO TO TELA
+           END-IF.
+
+       CONSULTA.
+           PERFORM INCLUSAO.
+           MOVE "CONSULTA" TO MSG.
+           DISPLAY TELA-OPCAO.
+       CONSULTAR.
+           PERFORM ALTERAR.
+              DISPLAY WS-SPACE AT 2030.
+              DISPLAY "      Continua a consulta?          " AT 2130.
+              ACCEPT WS-CONF AT 2157 WITH AUTO-SKIP.
+              IF WS-CONF = "S" OR "s"
+                   PERFORM LIMPA-DADOS                 
+                   DISPLAY LIMPATELA
+                   GO TO CONSULTAR
+                  ELSE
+                 GO TO TELA
+              END-IF.
+
+       MOSTRA.
+           DISPLAY FD-NOME   AT  0837.
+           DISPLAY FD-END    AT  1037.   
+           DISPLAY FD-BAIRRO AT  1237.
+           DISPLAY FD-CIDADE AT  1437.
+           DISPLAY FD-CEP    AT  1637.
+           display FD-TEL    at  1837.
+
+       SAIR.
+           DISPLAY ERASE AT 0101.
+           DISPLAY "        Confirma Saida?          " AT 1020.
+           ACCEPT WS-CONF AT 1130 with AUTO-SKIP.
+              IF WS-CONF = "S" OR "s"
+                   PERFORM LIMPA-DADOS                 
+                   DISPLAY LIMPATELA
+               DISPLAY "OBRIGADO POR UTILIZAR NOSSO SISTEMA!" AT 1830
+             ELSE
+                   if WS-CONF = "N" or "n"
+                   GO TO TELA.
+           

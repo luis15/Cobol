@@ -1,0 +1,56 @@
+IDENTIFICATION DIVISION.
+PROGRAM-ID. CALCULADORA.
+
+ENVIRONMENT DIVISION.
+        CONFIGURATION SECTION.
+        SPECIAL-NAMES. DECIMAL-POINT IS COMMA.
+        DATA DIVISION.
+            WORKING-STORAGE SECTION.
+            77 N1 PIC 99 VALUE ZERO.
+            77 N2 PIC 99 VALUE ZERO.
+            77 ESCOLHA PIC 9 VALUE ZERO.
+            77 SOMA PIC 99.
+            77 SUB PIC 99.
+            77 MULT PIC 99.
+            77 DIV PIC 99.
+            
+        PROCEDURE DIVISION.
+            DISPLAY "Hoje vamos calcular" AT 0110.
+            DISPLAY "Escolha a operacao" AT 0210.
+            DISPLAY "1-Somar" AT 0310.
+            DISPLAY "2-Subtrair" AT 0410.
+            DISPLAY "3-Multiplicar" AT 0510.
+            DISPLAY "4-Dividir" AT 0610.
+            
+            INICIO.
+            ACCEPT ESCOLHA AT 0710.
+            DISPLAY "Digite dois numeros." AT 0810.
+            ACCEPT N1 AT 0910.
+            ACCEPT N2 AT 1010.
+            
+            IF ESCOLHA=1 THEN
+                COMPUTE SOMA=N1+N2
+                DISPLAY "Soma=" AT 1110
+                DISPLAY SOMA AT 1130
+            ELSE 
+                IF ESCOLHA=2 THEN
+                    SUBTRACT N2 FROM N1 GIVING SUB
+                    DISPLAY "Subtracao=" AT 1110
+                    DISPLAY SUB AT 1130
+            ELSE 
+                IF ESCOLHA=3 THEN
+                    
+                    MULTIPLY N1 BY N2 GIVING MULT
+                    DISPLAY "Multiplicacao=" AT 1110
+                    DISPLAY MULT AT 1130
+            ELSE 
+                IF ESCOLHA=4 THEN
+                    COMPUTE DIV=N1/N2
+                    DISPLAY "Divisao=" AT 1110
+                    DISPLAY DIV AT 1130
+            END-IF.
+            
+            ACCEPT ESCOLHA AT 1410.
+            GO TO INICIO.
+
+STOP RUN.
